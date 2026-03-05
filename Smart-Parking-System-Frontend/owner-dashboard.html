@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard — ParkLK</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon" style="background:var(--green)"><i class="fas fa-square-parking"></i></div>
+            <div class="brand-name">Park<span>LK</span></div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Management</div>
+            <a href="owner-dashboard.html" class="nav-item active"><span class="nav-icon"><i class="fas fa-gauge"></i></span> Dashboard</a>
+            <a href="parking-slot.html" class="nav-item"><span class="nav-icon"><i class="fas fa-building"></i></span> My Slots</a>
+            <a href="appoiments.html" class="nav-item"><span class="nav-icon"><i class="fas fa-inbox"></i></span> Incoming Requests<span class="nav-badge">5</span></a>
+            <a href="transaction.html" class="nav-item"><span class="nav-icon"><i class="fas fa-coins"></i></span> Earnings</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Account</div>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-user"></i></span> Profile</a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-bell"></i></span> Notifications</a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-gear"></i></span> Settings</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background:linear-gradient(135deg,var(--green),var(--blue))">RW</div>
+                <div class="user-info"><div class="user-name">Ruwan Wijesinghe</div><div class="user-role">Park Owner</div></div>
+                <a href="park-auth.html" style="color:var(--text3);font-size:13px"><i class="fas fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <button id="menu-btn" class="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="page-title">Owner Dashboard</div>
+        <div class="topbar-actions">
+            <button class="btn btn-primary btn-sm" onclick="openModal('addSlotModal')"><i class="fas fa-plus"></i> Add Slot</button>
+            <button class="topbar-btn notif"><i class="fas fa-bell"></i></button>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <div>
+                <div class="page-header-title">Good morning, Ruwan 🏢</div>
+                <div class="page-header-sub">// owner portal · slot management · earnings</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="--c:var(--amber)">
+                <div class="stat-label">Total Slots</div><div class="stat-value" data-count="8">0</div>
+                <div class="stat-sub">6 active · 2 inactive</div><div class="stat-icon"><i class="fas fa-building"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--saffron)">
+                <div class="stat-label">Pending Requests</div><div class="stat-value" data-count="5">0</div>
+                <div class="stat-sub"><span class="stat-change warn">! Needs action</span></div><div class="stat-icon"><i class="fas fa-inbox"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--green)">
+                <div class="stat-label">This Month Earnings</div><div class="stat-value">18,400</div>
+                <div class="stat-sub mono" style="font-size:11px">LKR (after 20% commission)</div><div class="stat-icon"><i class="fas fa-coins"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--blue)">
+                <div class="stat-label">Completed Bookings</div><div class="stat-value" data-count="91">0</div>
+                <div class="stat-sub"><span class="stat-change up">↑ 8</span> this week</div><div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-bolt" style="color:var(--amber)"></i> Pending Appointment Requests</div>
+                <span class="badge badge-pending">5 Awaiting</span>
+            </div>
+            <div class="table-wrap">
+                <table id="pendingTable">
+                    <thead><tr><th>Request ID</th><th>Driver</th><th>Phone</th><th>Slot</th><th>Date & Time</th><th>Duration</th><th>Est. Fee</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <tr>
+                        <td><strong class="mono">#APT-0046</strong></td><td><strong>Nimal Perera</strong></td><td class="mono">071-234-5678</td><td>A-204</td><td class="mono" style="font-size:12px">06 Mar · 10:00</td><td class="mono">4 hrs</td><td class="mono text-green">LKR 150</td>
+                        <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="approvePending(this,'#APT-0046')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="rejectPending(this,'#APT-0046')"><i class="fas fa-xmark"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td><strong class="mono">#APT-0045</strong></td><td><strong>Samanthi De Silva</strong></td><td class="mono">076-987-6543</td><td>B-107</td><td class="mono" style="font-size:12px">06 Mar · 13:00</td><td class="mono">2 hrs</td><td class="mono text-green">LKR 100</td>
+                        <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="approvePending(this,'#APT-0045')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="rejectPending(this,'#APT-0045')"><i class="fas fa-xmark"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td><strong class="mono">#APT-0044</strong></td><td><strong>Kasun Silva</strong></td><td class="mono">077-111-2222</td><td>A-101</td><td class="mono" style="font-size:12px">06 Mar · 15:00</td><td class="mono">6 hrs</td><td class="mono text-green">LKR 250</td>
+                        <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="approvePending(this,'#APT-0044')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="rejectPending(this,'#APT-0044')"><i class="fas fa-xmark"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td><strong class="mono">#APT-0043</strong></td><td><strong>Dilini Fernando</strong></td><td class="mono">070-555-8888</td><td>C-003</td><td class="mono" style="font-size:12px">07 Mar · 08:00</td><td class="mono">3 hrs</td><td class="mono text-green">LKR 100</td>
+                        <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="approvePending(this,'#APT-0043')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="rejectPending(this,'#APT-0043')"><i class="fas fa-xmark"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td><strong class="mono">#APT-0042</strong></td><td><strong>Pradeep Raj</strong></td><td class="mono">075-333-4444</td><td>B-205</td><td class="mono" style="font-size:12px">07 Mar · 11:00</td><td class="mono">5 hrs</td><td class="mono text-green">LKR 200</td>
+                        <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="approvePending(this,'#APT-0042')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="rejectPending(this,'#APT-0042')"><i class="fas fa-xmark"></i></button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- My Slots -->
+            <div class="card">
+                <div class="card-header"><div class="card-title">My Parking Slots</div><a href="parking-slots.html" class="btn btn-ghost btn-sm">Manage <i class="fas fa-arrow-right"></i></a></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Slot</th><th>Address</th><th>Status</th><th>Today</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong>A-204</strong></td><td>45 Galle Rd</td><td><span class="badge badge-confirmed">Available</span></td><td class="mono" style="font-size:12px">3 bookings</td></tr>
+                        <tr><td><strong>B-107</strong></td><td>12 Duplication Rd</td><td><span class="badge badge-confirmed">Available</span></td><td class="mono" style="font-size:12px">1 booking</td></tr>
+                        <tr><td><strong>A-101</strong></td><td>Hospital Rd</td><td><span class="badge badge-active">Occupied</span></td><td class="mono" style="font-size:12px">2 bookings</td></tr>
+                        <tr><td><strong>C-003</strong></td><td>Baudhaloka Mw</td><td><span class="badge badge-inactive">Inactive</span></td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="card">
+                <div class="card-header"><div class="card-title">Revenue Breakdown</div><span class="card-meta">MARCH 2025</span></div>
+                <div class="card-body">
+                    <div class="calc-display">
+                        <div class="calc-row"><span>Gross Revenue</span><span class="calc-amount mono">LKR 23,000.00</span></div>
+                        <div class="calc-row"><span class="text-amber"><i class="fas fa-percent"></i> Agent Commission (20%)</span><span class="calc-amount mono text-amber">− LKR 4,600.00</span></div>
+                        <div class="calc-row total"><span>Your Earnings (80%)</span><span class="calc-amount text-green">LKR 18,400.00</span></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+                        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+                            <div class="mono" style="font-size:20px;font-weight:700;color:var(--blue)" data-count="38">0</div>
+                            <div style="font-size:11px;color:var(--text3)">Completed</div>
+                        </div>
+                        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+                            <div class="mono" style="font-size:20px;font-weight:700;color:var(--amber)" data-count="5">0</div>
+                            <div style="font-size:11px;color:var(--text3)">Pending</div>
+                        </div>
+                        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+                            <div class="mono" style="font-size:20px;font-weight:700;color:var(--red)" data-count="3">0</div>
+                            <div style="font-size:11px;color:var(--text3)">Cancelled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Add Slot Modal -->
+<div class="modal-overlay" id="addSlotModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-plus" style="color:var(--saffron)"></i> Add New Parking Slot</div><button class="modal-close" onclick="closeModal('addSlotModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Slot ID / Name</label><input type="text" class="form-control" placeholder="e.g. D-301"></div>
+            <div class="form-group"><label class="form-label">Address</label><input type="text" class="form-control" placeholder="Full street address"></div>
+            <div class="grid-2">
+                <div class="form-group"><label class="form-label">Latitude</label><input type="number" class="form-control" placeholder="6.9271" step="0.0001"></div>
+                <div class="form-group"><label class="form-label">Longitude</label><input type="number" class="form-control" placeholder="79.8612" step="0.0001"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Status</label><select class="form-control"><option>Active</option><option>Inactive</option></select></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost btn-sm" onclick="closeModal('addSlotModal')">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="closeModal('addSlotModal');showToast('Slot added!','success')"><i class="fas fa-save"></i> Save Slot</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    function approvePending(btn, id) {
+        btn.closest('tr').querySelector('td:last-child').innerHTML = '<span class="badge badge-confirmed">Approved</span>';
+        showToast(`${id} approved!`, 'success');
+    }
+    function rejectPending(btn, id) {
+        btn.closest('tr').querySelector('td:last-child').innerHTML = '<span class="badge badge-cancelled">Rejected</span>';
+        showToast(`${id} rejected`, 'error');
+    }
+</script>
+</body>
+</html>

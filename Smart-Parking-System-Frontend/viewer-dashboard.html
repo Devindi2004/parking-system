@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #071912;
+            --surface: #0c2018;
+            --border: #123025;
+            --accent: #10b981;
+            --accent-light: #6ee7b7;
+            --text: #d1fae5;
+            --muted: #3d7a60;
+            --blue: #06b6d4;
+            --yellow: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.1rem; font-weight: 800; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+        .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; background: var(--accent); color: #000; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+        .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #000; }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        .layout { display: flex; flex: 1; }
+        aside { width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.3rem; min-height: calc(100vh - 60px); }
+        .section-label { font-size: 0.6rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; padding: 0.5rem 0.75rem; margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--muted); transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: var(--border); color: var(--text); }
+        .nav-item.active { background: rgba(16,185,129,0.12); color: var(--accent); }
+        .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+        .readonly-tag { font-size: 0.6rem; background: rgba(16,185,129,0.1); color: var(--muted); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+        .back-link { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--muted); padding: 0.5rem 0.75rem; text-decoration: none; transition: color 0.2s; margin-top: auto; font-family: 'JetBrains Mono', monospace; }
+        .back-link:hover { color: var(--text); }
+        main { flex: 1; padding: 2rem; overflow-y: auto; }
+        .page-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .page-sub { color: var(--muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 2rem; }
+
+        .readonly-banner {
+            display: flex; align-items: center; gap: 0.75rem;
+            background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 10px; padding: 0.9rem 1.25rem; margin-bottom: 2rem;
+            font-size: 0.82rem; color: var(--accent-light);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--c, var(--accent)); }
+        .stat-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 0.25rem; }
+        .stat-change { font-size: 0.75rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+
+        .section-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 1rem; }
+
+        .reports-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+        .report-item {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem;
+            transition: border-color 0.2s;
+        }
+        .report-item:hover { border-color: var(--accent); }
+        .report-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .report-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .report-meta { font-size: 0.72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+        .report-actions { margin-left: auto; display: flex; gap: 0.5rem; }
+        .view-btn {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--muted); font-size: 0.72rem; padding: 4px 12px;
+            border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s; text-decoration: none; display: inline-block;
+        }
+        .view-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .dl-btn {
+            background: rgba(16,185,129,0.1); border: 1px solid var(--accent);
+            color: var(--accent); font-size: 0.72rem; padding: 4px 12px;
+            border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s; text-decoration: none; display: inline-block;
+        }
+        .dl-btn:hover { background: var(--accent); color: #000; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">👁 Nexus</div>
+    <div class="nav-right">
+        <span class="badge">Viewer</span>
+        <div class="avatar">VW</div>
+    </div>
+</nav>
+
+<div class="layout">
+    <aside>
+        <div class="section-label">Browse</div>
+        <a href="viewer-dashboard.html" class="nav-item active"><span class="icon">◈</span> Overview</a>
+        <a href="#" class="nav-item"><span class="icon">◉</span> Reports <span class="readonly-tag">read</span></a>
+        <a href="#" class="nav-item"><span class="icon">⊞</span> Content <span class="readonly-tag">read</span></a>
+        <a href="#" class="nav-item"><span class="icon">↓</span> Exports</a>
+
+        <a href="admin-dashboard.html" class="back-link">← Back to Admin</a>
+    </aside>
+
+    <main>
+        <h1 class="page-title">Viewer Dashboard</h1>
+        <p class="page-sub">// read-only access · reports · data exports</p>
+
+        <div class="readonly-banner">
+            👁 Read-only mode — You can view and export content, but cannot make changes.
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="--c:#10b981">
+                <div class="stat-label">Reports Available</div>
+                <div class="stat-value">56</div>
+                <div class="stat-change">↑ 4 new this week</div>
+            </div>
+            <div class="stat-card" style="--c:#06b6d4">
+                <div class="stat-label">Content Items</div>
+                <div class="stat-value">382</div>
+                <div class="stat-change">↑ Accessible to you</div>
+            </div>
+            <div class="stat-card" style="--c:#f59e0b">
+                <div class="stat-label">My Exports</div>
+                <div class="stat-value">14</div>
+                <div class="stat-change">→ Downloaded</div>
+            </div>
+            <div class="stat-card" style="--c:#7c3aed">
+                <div class="stat-label">Last Login</div>
+                <div class="stat-value" style="font-size:1.1rem;padding-top:0.5rem">Today</div>
+                <div class="stat-change">08:42 AM</div>
+            </div>
+        </div>
+
+        <div class="section-title">// Available Reports</div>
+        <div class="reports-list">
+            <div class="report-item">
+                <span class="report-icon">📊</span>
+                <div>
+                    <div class="report-title">Q1 2025 Performance Summary</div>
+                    <div class="report-meta">Updated Mar 01 · PDF · 2.4 MB</div>
+                </div>
+                <div class="report-actions">
+                    <a href="#" class="view-btn">View</a>
+                    <a href="#" class="dl-btn">↓ Export</a>
+                </div>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">📈</span>
+                <div>
+                    <div class="report-title">User Growth Analytics — Feb 2025</div>
+                    <div class="report-meta">Updated Feb 28 · CSV · 840 KB</div>
+                </div>
+                <div class="report-actions">
+                    <a href="#" class="view-btn">View</a>
+                    <a href="#" class="dl-btn">↓ Export</a>
+                </div>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">🗂️</span>
+                <div>
+                    <div class="report-title">Content Audit Report — All Channels</div>
+                    <div class="report-meta">Updated Feb 20 · XLSX · 1.1 MB</div>
+                </div>
+                <div class="report-actions">
+                    <a href="#" class="view-btn">View</a>
+                    <a href="#" class="dl-btn">↓ Export</a>
+                </div>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">💰</span>
+                <div>
+                    <div class="report-title">Budget Overview — Annual Summary</div>
+                    <div class="report-meta">Updated Jan 15 · PDF · 3.8 MB</div>
+                </div>
+                <div class="report-actions">
+                    <a href="#" class="view-btn">View</a>
+                    <a href="#" class="dl-btn">↓ Export</a>
+                </div>
+            </div>
+            <div class="report-item">
+                <span class="report-icon">👥</span>
+                <div>
+                    <div class="report-title">Team Headcount & Role Distribution</div>
+                    <div class="report-meta">Updated Jan 10 · PDF · 560 KB</div>
+                </div>
+                <div class="report-actions">
+                    <a href="#" class="view-btn">View</a>
+                    <a href="#" class="dl-btn">↓ Export</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Slots — ParkLK</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .slot-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px; }
+        .slot-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition); }
+        .slot-card:hover { border-color:var(--border-md);transform:translateY(-2px);box-shadow:var(--shadow); }
+        .slot-card-top { padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+        .slot-id { font-family:var(--font-display);font-size:20px;font-weight:800; }
+        .slot-body { padding:14px 16px; }
+        .slot-detail { display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:12.5px;color:var(--text2); }
+        .slot-detail-icon { flex-shrink:0;width:14px;color:var(--text3);font-size:11px; }
+        .slot-footer { padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:7px; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-square-parking"></i></div>
+            <div class="brand-name">Park<span>LK</span></div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Navigation</div>
+            <a href="user-dashboard.html" class="nav-item"><span class="nav-icon"><i class="fas fa-gauge"></i></span> Dashboard</a>
+            <a href="parking-slot.html" class="nav-item active"><span class="nav-icon"><i class="fas fa-map-location-dot"></i></span> Parking Slots</a>
+            <a href="appoiments.html" class="nav-item"><span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Appointments</a>
+            <a href="transaction.html" class="nav-item"><span class="nav-icon"><i class="fas fa-coins"></i></span> Transactions</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Role Dashboards</div>
+            <a href="user-dashboard.html" class="nav-item"><span class="nav-icon">🚗</span> Driver</a>
+            <a href="owner-dashboard.html" class="nav-item"><span class="nav-icon">🏢</span> Owner</a>
+            <a href="agent-dashboard.html" class="nav-item"><span class="nav-icon">🛡️</span> Agent</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">AK</div>
+                <div class="user-info"><div class="user-name">Ashan Kumara</div><div class="user-role">Driver</div></div>
+                <a href="park-auth.html" style="color:var(--text3);font-size:13px"><i class="fas fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <button id="menu-btn" class="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="page-title">Parking Slots</div>
+        <div class="topbar-actions">
+            <button class="btn btn-primary btn-sm" onclick="openModal('addSlotModal')"><i class="fas fa-plus"></i> Add Slot</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <div>
+                <div class="page-header-title">Find Parking Near You</div>
+                <div class="page-header-sub">// colombo city · google maps integration · live availability</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <div class="search-wrap"><input type="text" id="slotSearch" placeholder="Search slots, address..." oninput="filterSlotCards(this.value)"></div>
+                <select class="form-control" style="width:auto;padding:8px 28px 8px 12px;font-size:12px" onchange="filterSlotStatus(this.value)">
+                    <option value="all">All Status</option><option value="available">Available</option><option value="occupied">Occupied</option><option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="map-container mb-3" style="height:340px">
+            <div class="map-pin">📍</div>
+            <div class="map-label">Google Maps · Colombo Parking Network</div>
+            <div style="position:relative;z-index:1;font-size:12px;color:var(--text3);margin-top:4px">Initialize with <code style="color:var(--saffron)">initMap()</code> after adding your API key</div>
+            <!-- Demo pins -->
+            <div style="position:absolute;top:28%;left:33%;z-index:2;cursor:pointer;font-size:22px" onclick="openModal('slotDetailModal')" title="A-204">📍</div>
+            <div style="position:absolute;top:48%;left:54%;z-index:2;cursor:pointer;font-size:19px;opacity:.75" onclick="openModal('slotDetailModal')" title="B-107">📍</div>
+            <div style="position:absolute;top:62%;left:28%;z-index:2;cursor:pointer;font-size:21px;opacity:.8" onclick="openModal('slotDetailModal')" title="A-101">📍</div>
+            <div style="position:absolute;top:38%;left:68%;z-index:2;font-size:17px;opacity:.4" title="C-003 (inactive)">📍</div>
+            <div style="position:absolute;top:22%;left:58%;z-index:2;cursor:pointer;font-size:20px;opacity:.78" onclick="openModal('slotDetailModal')">📍</div>
+            <div style="position:absolute;bottom:16px;right:16px;z-index:2;display:flex;gap:7px">
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font-mono);font-size:10px;color:var(--green)">● Available</div>
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font-mono);font-size:10px;color:var(--red)">● Occupied</div>
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font-mono);font-size:10px;color:var(--text3)">● Inactive</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="cardsView">🗂 Card View</button>
+            <button class="tab-btn" data-tab="tableView">📋 Table View</button>
+        </div>
+
+        <!-- Card View -->
+        <div id="cardsView" class="tab-panel">
+            <div class="slot-grid" id="slotCards">
+
+                <div class="slot-card" data-status="available" data-name="A-204 Galle">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--green)">A-204</div>
+                        <span class="badge badge-confirmed">Available</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>45 Galle Road, Colombo 03</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9271, 79.8612</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Ruwan Wijesinghe</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-primary btn-sm w-full" onclick="openModal('bookModal')"><i class="fas fa-calendar-plus"></i> Book Now</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')"><i class="fas fa-map-pin"></i></button>
+                    </div>
+                </div>
+
+                <div class="slot-card" data-status="available" data-name="B-107 Duplication">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--green)">B-107</div>
+                        <span class="badge badge-confirmed">Available</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>12 Duplication Road, Colombo 03</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9005, 79.8553</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Ruwan Wijesinghe</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-primary btn-sm w-full" onclick="openModal('bookModal')"><i class="fas fa-calendar-plus"></i> Book Now</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')"><i class="fas fa-map-pin"></i></button>
+                    </div>
+                </div>
+
+                <div class="slot-card" data-status="occupied" data-name="A-101 Hospital">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--red)">A-101</div>
+                        <span class="badge badge-cancelled">Occupied</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>78 Hospital Road, Colombo 07</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9185, 79.8680</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Ruwan Wijesinghe</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-ghost btn-sm w-full" disabled style="opacity:.5;cursor:not-allowed"><i class="fas fa-ban"></i> Currently Occupied</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')"><i class="fas fa-map-pin"></i></button>
+                    </div>
+                </div>
+
+                <div class="slot-card" data-status="inactive" data-name="C-003 Baudhaloka">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--text3)">C-003</div>
+                        <span class="badge badge-inactive">Inactive</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>Baudhaloka Mawatha, Col 07</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9120, 79.8630</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Nuwan Bandara</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-ghost btn-sm w-full" disabled style="opacity:.5;cursor:not-allowed"><i class="fas fa-circle-xmark"></i> Not Available</button>
+                    </div>
+                </div>
+
+                <div class="slot-card" data-status="available" data-name="B-205 Flower">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--green)">B-205</div>
+                        <span class="badge badge-confirmed">Available</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>33 Flower Road, Colombo 07</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9223, 79.8601</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Champika Rathnayake</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-primary btn-sm w-full" onclick="openModal('bookModal')"><i class="fas fa-calendar-plus"></i> Book Now</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')"><i class="fas fa-map-pin"></i></button>
+                    </div>
+                </div>
+
+                <div class="slot-card" data-status="available" data-name="D-011 Reid">
+                    <div class="slot-card-top">
+                        <div class="slot-id" style="color:var(--green)">D-011</div>
+                        <span class="badge badge-confirmed">Available</span>
+                    </div>
+                    <div class="slot-body">
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-location-dot"></i></span>22 Reid Avenue, Colombo 07</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-crosshairs"></i></span><span class="mono">6.9150, 79.8590</span></div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-user"></i></span>Owner: Tharaka Jayawardena</div>
+                        <div class="slot-detail"><span class="slot-detail-icon"><i class="fas fa-coins"></i></span>LKR 100 base · LKR 50/hr extra</div>
+                    </div>
+                    <div class="slot-footer">
+                        <button class="btn btn-primary btn-sm w-full" onclick="openModal('bookModal')"><i class="fas fa-calendar-plus"></i> Book Now</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')"><i class="fas fa-map-pin"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Table View -->
+        <div id="tableView" class="tab-panel" style="display:none">
+            <div class="card">
+                <div class="table-wrap">
+                    <table id="slotsTable">
+                        <thead><tr><th>Slot ID</th><th>Owner</th><th>Address</th><th>Lat</th><th>Lng</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong>A-204</strong></td><td>Ruwan Wijesinghe</td><td>45 Galle Rd, Col 03</td><td class="mono">6.9271</td><td class="mono">79.8612</td><td><span class="badge badge-confirmed">Available</span></td><td class="flex gap-1"><button class="btn btn-primary btn-sm" onclick="openModal('bookModal')">Book</button><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        <tr><td><strong>B-107</strong></td><td>Ruwan Wijesinghe</td><td>12 Duplication Rd</td><td class="mono">6.9005</td><td class="mono">79.8553</td><td><span class="badge badge-confirmed">Available</span></td><td class="flex gap-1"><button class="btn btn-primary btn-sm" onclick="openModal('bookModal')">Book</button><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        <tr><td><strong>A-101</strong></td><td>Ruwan Wijesinghe</td><td>78 Hospital Rd, Col 07</td><td class="mono">6.9185</td><td class="mono">79.8680</td><td><span class="badge badge-cancelled">Occupied</span></td><td><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        <tr><td><strong>C-003</strong></td><td>Nuwan Bandara</td><td>Baudhaloka Mw</td><td class="mono">6.9120</td><td class="mono">79.8630</td><td><span class="badge badge-inactive">Inactive</span></td><td><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        <tr><td><strong>B-205</strong></td><td>Champika Rathnayake</td><td>33 Flower Rd, Col 07</td><td class="mono">6.9223</td><td class="mono">79.8601</td><td><span class="badge badge-confirmed">Available</span></td><td class="flex gap-1"><button class="btn btn-primary btn-sm" onclick="openModal('bookModal')">Book</button><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        <tr><td><strong>D-011</strong></td><td>Tharaka Jayawardena</td><td>22 Reid Ave, Col 07</td><td class="mono">6.9150</td><td class="mono">79.8590</td><td><span class="badge badge-confirmed">Available</span></td><td class="flex gap-1"><button class="btn btn-primary btn-sm" onclick="openModal('bookModal')">Book</button><button class="btn btn-ghost btn-sm" onclick="openModal('slotDetailModal')">Details</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Book Modal -->
+<div class="modal-overlay" id="bookModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-calendar-plus" style="color:var(--saffron)"></i> Book Slot — A-204</div><button class="modal-close" onclick="closeModal('bookModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="grid-2">
+                <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Start Time</label><input type="time" class="form-control"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Duration (hours)</label><input type="number" id="bookHours" class="form-control" min="0.5" max="24" step="0.5" value="3"></div>
+            <div id="bookFeeResult"></div>
+            <p style="font-size:11px;color:var(--text3)"><i class="fas fa-info-circle"></i> Cash payment collected on-site.</p>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('bookModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="submitBooking()"><i class="fas fa-paper-plane"></i> Send Request</button></div>
+    </div>
+</div>
+
+<!-- Slot Detail Modal -->
+<div class="modal-overlay" id="slotDetailModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-map-pin" style="color:var(--saffron)"></i> Slot Details — A-204</div><button class="modal-close" onclick="closeModal('slotDetailModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="grid-2 mb-2">
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Slot ID</div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--green)">A-204</div></div>
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Status</div><span class="badge badge-confirmed">Available</span></div>
+            </div>
+            <div class="form-group"><label class="form-label">Address</label><div style="font-size:14px">45 Galle Road, Colombo 03</div></div>
+            <div class="grid-2"><div class="form-group"><label class="form-label">Latitude</label><div class="mono" style="font-size:13px">6.9271</div></div><div class="form-group"><label class="form-label">Longitude</label><div class="mono" style="font-size:13px">79.8612</div></div></div>
+            <div class="form-group"><label class="form-label">Owner</label><div style="display:flex;align-items:center;gap:8px">Ruwan Wijesinghe <span class="badge badge-verified">Verified</span></div></div>
+            <div class="map-container" style="height:150px;border-radius:8px;margin-top:4px"><div class="map-pin" style="font-size:26px">📍</div><div class="map-label">6.9271, 79.8612</div></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('slotDetailModal')">Close</button><button class="btn btn-primary btn-sm" onclick="closeModal('slotDetailModal');openModal('bookModal')"><i class="fas fa-calendar-plus"></i> Book</button></div>
+    </div>
+</div>
+
+<!-- Add Slot Modal -->
+<div class="modal-overlay" id="addSlotModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-plus" style="color:var(--saffron)"></i> Add New Slot</div><button class="modal-close" onclick="closeModal('addSlotModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Slot ID</label><input type="text" class="form-control" placeholder="e.g. E-401"></div>
+            <div class="form-group"><label class="form-label">Address</label><input type="text" class="form-control" placeholder="Full street address"></div>
+            <div class="grid-2">
+                <div class="form-group"><label class="form-label">Latitude</label><input type="number" class="form-control" placeholder="6.9271" step="0.0001"></div>
+                <div class="form-group"><label class="form-label">Longitude</label><input type="number" class="form-control" placeholder="79.8612" step="0.0001"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Owner ID</label><input type="number" class="form-control" placeholder="Owner database ID"></div>
+            <div class="form-group"><label class="form-label">Status</label><select class="form-control"><option>Active</option><option>Inactive</option></select></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('addSlotModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="closeModal('addSlotModal');showToast('Slot added!','success')"><i class="fas fa-save"></i> Save</button></div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{ initFeeCalc('bookHours','bookFeeResult'); });
+
+    function filterSlotCards(q) {
+        q=q.toLowerCase();
+        document.querySelectorAll('#slotCards .slot-card').forEach(c=>{
+            c.style.display=c.dataset.name.toLowerCase().includes(q)||c.textContent.toLowerCase().includes(q)?'':'none';
+        });
+    }
+
+    function filterSlotStatus(val) {
+        document.querySelectorAll('#slotCards .slot-card').forEach(c=>{
+            c.style.display=(val==='all'||c.dataset.status===val)?'':'none';
+        });
+    }
+
+    function submitBooking() {
+        closeModal('bookModal');
+        showToast('Booking request sent! Awaiting owner approval.','success');
+    }
+</script>
+</body>
+</html>

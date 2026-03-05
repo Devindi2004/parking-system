@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions — ParkLK</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-square-parking"></i></div>
+            <div class="brand-name">Park<span>LK</span></div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Navigation</div>
+            <a href="agent-dashboard.html" class="nav-item"><span class="nav-icon"><i class="fas fa-gauge"></i></span> Dashboard</a>
+            <a href="parking-slot.html" class="nav-item"><span class="nav-icon"><i class="fas fa-map-location-dot"></i></span> Parking Slots</a>
+            <a href="appoiments.html" class="nav-item"><span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Appointments</a>
+            <a href="transaction.html" class="nav-item active"><span class="nav-icon"><i class="fas fa-coins"></i></span> Transactions</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background:linear-gradient(135deg,var(--saffron),var(--red))">SA</div>
+                <div class="user-info"><div class="user-name">Saman Abeywickrama</div><div class="user-role">Agent · Admin</div></div>
+                <a href="park-auth.html" style="color:var(--text3);font-size:13px"><i class="fas fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <button id="menu-btn" class="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="page-title">Transactions</div>
+        <div class="topbar-actions">
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Exporting CSV...','info')"><i class="fas fa-download"></i> Export CSV</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="stats-grid mb-3">
+            <div class="stat-card" style="--c:var(--saffron)"><div class="stat-label">Total Revenue</div><div class="stat-value">231,000</div><div class="stat-sub mono" style="font-size:11px">LKR all time</div><div class="stat-icon"><i class="fas fa-coins"></i></div></div>
+            <div class="stat-card" style="--c:var(--blue)"><div class="stat-label">Agent Commission</div><div class="stat-value">46,200</div><div class="stat-sub mono" style="font-size:11px">LKR (20%) this month</div><div class="stat-icon"><i class="fas fa-diamond"></i></div></div>
+            <div class="stat-card" style="--c:var(--green)"><div class="stat-label">Owner Payouts</div><div class="stat-value">184,800</div><div class="stat-sub mono" style="font-size:11px">LKR (80%) this month</div><div class="stat-icon"><i class="fas fa-building"></i></div></div>
+            <div class="stat-card" style="--c:var(--amber)"><div class="stat-label">Total Transactions</div><div class="stat-value" data-count="203">0</div><div class="stat-sub">all completed</div><div class="stat-icon"><i class="fas fa-receipt"></i></div></div>
+        </div>
+
+        <!-- Pricing formula reference -->
+        <div class="card mb-3" style="border-color:rgba(255,107,43,0.18)">
+            <div class="card-body" style="padding:14px 18px">
+                <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div style="width:34px;height:34px;background:var(--saffron-glow);border:1px solid rgba(255,107,43,0.25);border-radius:8px;display:grid;place-items:center;font-size:16px">📐</div>
+                        <div>
+                            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px">Pricing Formula</div>
+                            <div class="mono" style="font-size:12px;color:var(--text)">P = 100 if h ≤ 3 &nbsp;·&nbsp; P = 100 + (h−3)×50 if h > 3</div>
+                        </div>
+                    </div>
+                    <div style="height:32px;width:1px;background:var(--border)"></div>
+                    <div>
+                        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px">Commission Split</div>
+                        <div class="mono" style="font-size:12px"><span class="text-amber">C = P × 0.20 (Agent)</span> &nbsp;·&nbsp; <span class="text-green">Owner = P × 0.80</span></div>
+                    </div>
+                    <div style="margin-left:auto">
+                        <button class="btn btn-ghost btn-sm" onclick="openModal('calcModal')"><i class="fas fa-calculator"></i> Calculator</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ledger -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Transaction Ledger</div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                    <div class="search-wrap"><input type="text" id="txnSearch" placeholder="Search TXN, driver..."></div>
+                    <select class="form-control" style="width:auto;padding:8px 28px 8px 12px;font-size:12px">
+                        <option>All Owners</option><option>Ruwan Wijesinghe</option><option>Nuwan Bandara</option><option>Champika Rathnayake</option>
+                    </select>
+                    <select class="form-control" style="width:auto;padding:8px 28px 8px 12px;font-size:12px">
+                        <option>All Months</option><option>March 2025</option><option>February 2025</option><option>January 2025</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table id="txnTable">
+                    <thead><tr><th>TXN ID</th><th>Appointment</th><th>Driver</th><th>Owner</th><th>Slot</th><th>Hours</th><th>Total</th><th>Agent (20%)</th><th>Owner (80%)</th><th>Date</th><th></th></tr></thead>
+                    <tbody>
+                    <tr><td><strong class="mono">#TXN-0092</strong></td><td class="mono">#APT-0041</td><td>Ashan Kumara</td><td>Ruwan W.</td><td>A-204</td><td class="mono">3</td><td class="mono fw-600">LKR 100</td><td class="mono text-amber">LKR 20</td><td class="mono text-green">LKR 80</td><td style="font-size:12px">05 Mar 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0091</strong></td><td class="mono">#APT-0040</td><td>Nimal Perera</td><td>Ruwan W.</td><td>B-107</td><td class="mono">5</td><td class="mono fw-600">LKR 200</td><td class="mono text-amber">LKR 40</td><td class="mono text-green">LKR 160</td><td style="font-size:12px">04 Mar 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0090</strong></td><td class="mono">#APT-0038</td><td>Kasun Silva</td><td>Nuwan B.</td><td>C-003</td><td class="mono">6</td><td class="mono fw-600">LKR 250</td><td class="mono text-amber">LKR 50</td><td class="mono text-green">LKR 200</td><td style="font-size:12px">01 Mar 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0089</strong></td><td class="mono">#APT-0036</td><td>Pradeep Raj</td><td>Tharaka J.</td><td>D-011</td><td class="mono">2</td><td class="mono fw-600">LKR 100</td><td class="mono text-amber">LKR 20</td><td class="mono text-green">LKR 80</td><td style="font-size:12px">27 Feb 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0088</strong></td><td class="mono">#APT-0034</td><td>Samanthi D.</td><td>Ruwan W.</td><td>A-204</td><td class="mono">4</td><td class="mono fw-600">LKR 150</td><td class="mono text-amber">LKR 30</td><td class="mono text-green">LKR 120</td><td style="font-size:12px">26 Feb 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0087</strong></td><td class="mono">#APT-0033</td><td>Ashan Kumara</td><td>Champika R.</td><td>B-205</td><td class="mono">8</td><td class="mono fw-600">LKR 350</td><td class="mono text-amber">LKR 70</td><td class="mono text-green">LKR 280</td><td style="font-size:12px">24 Feb 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    <tr><td><strong class="mono">#TXN-0086</strong></td><td class="mono">#APT-0031</td><td>Nimal Perera</td><td>Ruwan W.</td><td>A-101</td><td class="mono">10</td><td class="mono fw-600">LKR 450</td><td class="mono text-amber">LKR 90</td><td class="mono text-green">LKR 360</td><td style="font-size:12px">22 Feb 2025</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('txnDetailModal')">View</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Footer totals -->
+            <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:22px;flex-wrap:wrap">
+                <div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Page Total</div><div class="mono" style="font-size:15px;font-weight:700">LKR 1,600.00</div></div>
+                <div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Agent Portion</div><div class="mono text-amber" style="font-size:15px;font-weight:700">LKR 320.00</div></div>
+                <div><div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Owner Portion</div><div class="mono text-green" style="font-size:15px;font-weight:700">LKR 1,280.00</div></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- TXN Detail Modal -->
+<div class="modal-overlay" id="txnDetailModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-receipt" style="color:var(--saffron)"></i> Transaction — #TXN-0092</div><button class="modal-close" onclick="closeModal('txnDetailModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="grid-2 mb-2">
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">TXN ID</div><div class="mono text-saffron" style="font-size:14px;font-weight:700">#TXN-0092</div></div>
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Appointment</div><div class="mono" style="font-size:14px;font-weight:700">#APT-0041</div></div>
+            </div>
+            <div class="calc-display">
+                <div class="calc-row"><span class="text-dim">Driver</span><span>Ashan Kumara</span></div>
+                <div class="calc-row"><span class="text-dim">Owner</span><span>Ruwan Wijesinghe</span></div>
+                <div class="calc-row"><span class="text-dim">Slot</span><span>A-204 · 45 Galle Rd</span></div>
+                <div class="calc-row"><span class="text-dim">Duration</span><span class="mono">3 hours</span></div>
+                <div class="calc-row"><span class="text-dim">Date</span><span class="mono">05 Mar 2025</span></div>
+                <div class="divider" style="margin:8px 0"></div>
+                <div class="calc-row"><span>Base Fee (≤3 hrs)</span><span class="calc-amount mono">LKR 100.00</span></div>
+                <div class="calc-row"><span>Extra Hours</span><span class="calc-amount mono">LKR 0.00</span></div>
+                <div class="calc-row total"><span>Total Amount</span><span class="calc-amount text-saffron">LKR 100.00</span></div>
+                <div class="calc-row"><span class="text-amber"><i class="fas fa-percent"></i> Agent Commission (20%)</span><span class="calc-amount text-amber">LKR 20.00</span></div>
+                <div class="calc-row"><span class="text-green"><i class="fas fa-building"></i> Owner Earnings (80%)</span><span class="calc-amount text-green">LKR 80.00</span></div>
+            </div>
+            <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:18px">💵</span>
+                <div><div style="font-size:13px;font-weight:600">Cash Payment</div><div style="font-size:11px;color:var(--text2)">Collected on-site at parking entrance</div></div>
+                <span class="badge badge-confirmed" style="margin-left:auto">Collected</span>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('txnDetailModal')">Close</button><button class="btn btn-primary btn-sm" onclick="showToast('Receipt exported','success')"><i class="fas fa-download"></i> Export</button></div>
+    </div>
+</div>
+
+<!-- Calculator Modal -->
+<div class="modal-overlay" id="calcModal">
+    <div class="modal" style="max-width:400px">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-calculator" style="color:var(--saffron)"></i> Fee Calculator</div><button class="modal-close" onclick="closeModal('calcModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Parking Duration (hours)</label><input type="number" id="modalCalcH" class="form-control" min="0.5" max="24" step="0.5" value="3"></div>
+            <div id="modalCalcResult"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('calcModal')">Close</button></div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        initSearch('txnSearch','txnTable');
+        initFeeCalc('modalCalcH','modalCalcResult');
+    });
+</script>
+</body>
+</html>

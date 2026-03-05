@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments — ParkLK</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-square-parking"></i></div>
+            <div class="brand-name">Park<span>LK</span></div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Navigation</div>
+            <a href="user-dashboard.html" class="nav-item"><span class="nav-icon"><i class="fas fa-gauge"></i></span> Dashboard</a>
+            <a href="parking-slot.html" class="nav-item"><span class="nav-icon"><i class="fas fa-map-location-dot"></i></span> Parking Slots</a>
+            <a href="appoiments.html" class="nav-item active"><span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Appointments</a>
+            <a href="transaction.html" class="nav-item"><span class="nav-icon"><i class="fas fa-coins"></i></span> Transactions</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">AK</div>
+                <div class="user-info"><div class="user-name">Ashan Kumara</div><div class="user-role">Driver</div></div>
+                <a href="park-auth.html" style="color:var(--text3);font-size:13px"><i class="fas fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <button id="menu-btn" class="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="page-title">Appointments</div>
+        <div class="topbar-actions">
+            <a href="parking-slots.html" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New Booking</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="stats-grid mb-3">
+            <div class="stat-card" style="--c:var(--green)"><div class="stat-label">Confirmed</div><div class="stat-value" data-count="9">0</div><div class="stat-icon"><i class="fas fa-circle-check"></i></div></div>
+            <div class="stat-card" style="--c:var(--amber)"><div class="stat-label">Pending</div><div class="stat-value" data-count="2">0</div><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div></div>
+            <div class="stat-card" style="--c:var(--red)"><div class="stat-label">Cancelled</div><div class="stat-value" data-count="3">0</div><div class="stat-icon"><i class="fas fa-circle-xmark"></i></div></div>
+            <div class="stat-card" style="--c:var(--blue)"><div class="stat-label">Total</div><div class="stat-value" data-count="14">0</div><div class="stat-icon"><i class="fas fa-calendar-check"></i></div></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tabAll">All</button>
+            <button class="tab-btn" data-tab="tabConfirmed">Confirmed</button>
+            <button class="tab-btn" data-tab="tabPending">Pending</button>
+            <button class="tab-btn" data-tab="tabCancelled">Cancelled</button>
+        </div>
+
+        <!-- All -->
+        <div id="tabAll" class="tab-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">All Appointments</div>
+                    <div class="search-wrap"><input type="text" id="aptSearch" placeholder="Search..."></div>
+                </div>
+                <div class="table-wrap">
+                    <table id="aptTable">
+                        <thead><tr><th>ID</th><th>Driver</th><th>Slot</th><th>Start</th><th>End</th><th>Duration</th><th>Fee</th><th>Status</th><th>QR</th><th>Actions</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong class="mono">#APT-0041</strong></td><td>Ashan Kumara</td><td>A-204</td><td class="mono" style="font-size:12px">05 Mar · 09:00</td><td class="mono" style="font-size:12px">05 Mar · 12:00</td><td class="mono">3 hrs</td><td class="mono text-green">LKR 100</td><td><span class="badge badge-confirmed">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i></button></td><td><button class="btn btn-danger btn-sm" onclick="cancelApt(this,'#APT-0041')"><i class="fas fa-xmark"></i></button></td></tr>
+                        <tr><td><strong class="mono">#APT-0040</strong></td><td>Nimal Perera</td><td>B-107</td><td class="mono" style="font-size:12px">04 Mar · 14:00</td><td class="mono" style="font-size:12px">04 Mar · 19:00</td><td class="mono">5 hrs</td><td class="mono text-green">LKR 200</td><td><span class="badge badge-confirmed">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i></button></td><td>—</td></tr>
+                        <tr><td><strong class="mono">#APT-0039</strong></td><td>Dilini Fernando</td><td>A-101</td><td class="mono" style="font-size:12px">03 Mar · 10:00</td><td class="mono" style="font-size:12px">03 Mar · 13:00</td><td class="mono">3 hrs</td><td class="mono text-green">LKR 100</td><td><span class="badge badge-pending">Pending</span></td><td>—</td><td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="confirmApt(this,'#APT-0039')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="cancelApt(this,'#APT-0039')"><i class="fas fa-xmark"></i></button></td></tr>
+                        <tr><td><strong class="mono">#APT-0038</strong></td><td>Kasun Silva</td><td>C-003</td><td class="mono" style="font-size:12px">01 Mar · 08:00</td><td class="mono" style="font-size:12px">01 Mar · 14:00</td><td class="mono">6 hrs</td><td class="mono text-green">LKR 250</td><td><span class="badge badge-confirmed">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i></button></td><td>—</td></tr>
+                        <tr><td><strong class="mono">#APT-0037</strong></td><td>Samanthi De Silva</td><td>B-205</td><td class="mono" style="font-size:12px">28 Feb · 13:00</td><td class="mono" style="font-size:12px">28 Feb · 15:00</td><td class="mono">2 hrs</td><td class="mono">LKR 100</td><td><span class="badge badge-cancelled">Cancelled</span></td><td>—</td><td>—</td></tr>
+                        <tr><td><strong class="mono">#APT-0036</strong></td><td>Pradeep Raj</td><td>D-011</td><td class="mono" style="font-size:12px">27 Feb · 09:00</td><td class="mono" style="font-size:12px">27 Feb · 11:00</td><td class="mono">2 hrs</td><td class="mono text-green">LKR 100</td><td><span class="badge badge-pending">Pending</span></td><td>—</td><td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="confirmApt(this,'#APT-0036')"><i class="fas fa-check"></i></button><button class="btn btn-danger btn-sm" onclick="cancelApt(this,'#APT-0036')"><i class="fas fa-xmark"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmed -->
+        <div id="tabConfirmed" class="tab-panel" style="display:none">
+            <div class="card">
+                <div class="card-header"><div class="card-title">Confirmed Appointments</div></div>
+                <div class="table-wrap">
+                    <table><thead><tr><th>ID</th><th>Driver</th><th>Slot</th><th>Date</th><th>Duration</th><th>Fee</th><th>QR</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong class="mono">#APT-0041</strong></td><td>Ashan Kumara</td><td>A-204</td><td class="mono" style="font-size:12px">05 Mar · 09:00–12:00</td><td class="mono">3 hrs</td><td class="mono text-green">LKR 100</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i> QR</button></td></tr>
+                        <tr><td><strong class="mono">#APT-0040</strong></td><td>Nimal Perera</td><td>B-107</td><td class="mono" style="font-size:12px">04 Mar · 14:00–19:00</td><td class="mono">5 hrs</td><td class="mono text-green">LKR 200</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i> QR</button></td></tr>
+                        <tr><td><strong class="mono">#APT-0038</strong></td><td>Kasun Silva</td><td>C-003</td><td class="mono" style="font-size:12px">01 Mar · 08:00–14:00</td><td class="mono">6 hrs</td><td class="mono text-green">LKR 250</td><td><button class="btn btn-ghost btn-sm" onclick="openModal('qrModal')"><i class="fas fa-qrcode"></i> QR</button></td></tr>
+                        </tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending -->
+        <div id="tabPending" class="tab-panel" style="display:none">
+            <div class="card">
+                <div class="card-header"><div class="card-title">Pending Appointments</div><span class="badge badge-pending">Awaiting Owner Action</span></div>
+                <div class="table-wrap">
+                    <table><thead><tr><th>ID</th><th>Driver</th><th>Slot</th><th>Date</th><th>Duration</th><th>Fee</th><th>Actions</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong class="mono">#APT-0039</strong></td><td>Dilini Fernando</td><td>A-101</td><td class="mono" style="font-size:12px">03 Mar · 10:00–13:00</td><td class="mono">3 hrs</td><td class="mono text-green">LKR 100</td><td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="confirmApt(this,'#APT-0039')"><i class="fas fa-check"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="cancelApt(this,'#APT-0039')"><i class="fas fa-xmark"></i></button></td></tr>
+                        <tr><td><strong class="mono">#APT-0036</strong></td><td>Pradeep Raj</td><td>D-011</td><td class="mono" style="font-size:12px">27 Feb · 09:00–11:00</td><td class="mono">2 hrs</td><td class="mono text-green">LKR 100</td><td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="confirmApt(this,'#APT-0036')"><i class="fas fa-check"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="cancelApt(this,'#APT-0036')"><i class="fas fa-xmark"></i></button></td></tr>
+                        </tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancelled -->
+        <div id="tabCancelled" class="tab-panel" style="display:none">
+            <div class="card">
+                <div class="card-header"><div class="card-title">Cancelled Appointments</div></div>
+                <div class="table-wrap">
+                    <table><thead><tr><th>ID</th><th>Driver</th><th>Slot</th><th>Date</th><th>Duration</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong class="mono">#APT-0037</strong></td><td>Samanthi De Silva</td><td>B-205</td><td class="mono" style="font-size:12px">28 Feb · 13:00–15:00</td><td class="mono">2 hrs</td></tr>
+                        <tr><td><strong class="mono">#APT-0035</strong></td><td>Ashan Kumara</td><td>A-101</td><td class="mono" style="font-size:12px">25 Feb · 07:00–11:00</td><td class="mono">4 hrs</td></tr>
+                        </tbody></table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- QR Modal -->
+<div class="modal-overlay" id="qrModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-qrcode" style="color:var(--saffron)"></i> Entry QR Code</div><button class="modal-close" onclick="closeModal('qrModal')">✕</button></div>
+        <div class="modal-body" style="text-align:center">
+            <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Present this QR at the parking entrance.</p>
+            <div style="display:inline-block;background:#fff;padding:18px;border-radius:12px;margin-bottom:14px">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?data=PARKLK-APPOINTMENT-DATA&size=180x180&bgcolor=ffffff&color=111111" alt="QR" style="width:160px;height:160px;display:block;border-radius:4px">
+                <div style="font-family:var(--font-mono);font-size:11px;color:#444;margin-top:8px">APT-0041 · SLOT A-204</div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost btn-sm" onclick="closeModal('qrModal')">Close</button><button class="btn btn-primary btn-sm" onclick="showToast('QR saved!','success')"><i class="fas fa-download"></i> Save</button></div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{ initSearch('aptSearch','aptTable'); });
+
+    function confirmApt(btn,id) {
+        const row=btn.closest('tr'); const cells=row.querySelectorAll('td');
+        // find status cell
+        row.querySelectorAll('td').forEach(td=>{ if(td.querySelector('.badge-pending')) td.innerHTML='<span class="badge badge-confirmed">Confirmed</span>'; });
+        row.querySelector('td:last-child').innerHTML='<button class="btn btn-ghost btn-sm" onclick="openModal(\'qrModal\')"><i class="fas fa-qrcode"></i></button>';
+        showToast(id+' confirmed!','success');
+    }
+
+    function cancelApt(btn,id) {
+        const row=btn.closest('tr');
+        row.querySelectorAll('td').forEach(td=>{ if(td.querySelector('.badge'))td.innerHTML='<span class="badge badge-cancelled">Cancelled</span>'; });
+        row.querySelector('td:last-child').innerHTML='—';
+        showToast(id+' cancelled','error');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard — ParkLK</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon" style="background:var(--saffron)"><i class="fas fa-square-parking"></i></div>
+            <div class="brand-name">Park<span>LK</span></div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Platform</div>
+            <a href="agent-dashboard.html" class="nav-item active"><span class="nav-icon"><i class="fas fa-gauge"></i></span> Overview</a>
+            <a href="#" class="nav-item" onclick="openModal('usersModal');return false"><span class="nav-icon"><i class="fas fa-users"></i></span> Users</a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-building"></i></span> Park Owners <span class="nav-badge" style="background:var(--amber)">3</span></a>
+            <a href="parking-slot.html" class="nav-item"><span class="nav-icon"><i class="fas fa-map-location-dot"></i></span> All Slots</a>
+            <a href="appoiments.html" class="nav-item"><span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Appointments</a>
+            <a href="transaction.html" class="nav-item"><span class="nav-icon"><i class="fas fa-coins"></i></span> Transactions</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">System</div>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-shield-halved"></i></span> Access Control</a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-list-check"></i></span> Audit Log</a>
+            <a href="#" class="nav-item"><span class="nav-icon"><i class="fas fa-gear"></i></span> Settings</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" style="background:linear-gradient(135deg,var(--saffron),var(--red))">SA</div>
+                <div class="user-info"><div class="user-name">Saman Abeywickrama</div><div class="user-role">Agent · Admin</div></div>
+                <a href="park-auth.html" style="color:var(--text3);font-size:13px"><i class="fas fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </aside>
+
+    <header class="topbar">
+        <button id="menu-btn" class="topbar-menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="page-title">Platform Overview</div>
+        <div class="topbar-actions">
+            <button class="btn btn-primary btn-sm" onclick="openModal('verifyOwnerModal')"><i class="fas fa-check"></i> Verify Owner</button>
+            <button class="topbar-btn notif"><i class="fas fa-bell"></i></button>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <div>
+                <div class="page-header-title">Platform Control Panel 🛡️</div>
+                <div class="page-header-sub">// full admin access · commission tracking · owner verification</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="--c:var(--saffron)">
+                <div class="stat-label">Total Commission</div><div class="stat-value">46,200</div>
+                <div class="stat-sub mono" style="font-size:11px">LKR this month</div><div class="stat-icon"><i class="fas fa-diamond"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--blue)">
+                <div class="stat-label">Registered Users</div><div class="stat-value" data-count="284">0</div>
+                <div class="stat-sub"><span class="stat-change up">↑ 12</span> this week</div><div class="stat-icon"><i class="fas fa-users"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--amber)">
+                <div class="stat-label">Park Owners</div><div class="stat-value" data-count="18">0</div>
+                <div class="stat-sub"><span class="stat-change warn">3 pending verification</span></div><div class="stat-icon"><i class="fas fa-building"></i></div>
+            </div>
+            <div class="stat-card" style="--c:var(--green)">
+                <div class="stat-label">Total Appointments</div><div class="stat-value" data-count="1203">0</div>
+                <div class="stat-sub"><span class="stat-change up">↑ 48</span> this month</div><div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            </div>
+        </div>
+
+        <div class="grid-2 mb-3">
+            <!-- Owner Verification -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-triangle-exclamation" style="color:var(--amber)"></i> Owners Pending Verification</div>
+                    <span class="badge badge-pending">3 Pending</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>Phone</th><th>Submitted</th><th>Action</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong>Nuwan Bandara</strong></td><td class="mono">071-555-1234</td><td style="font-size:12px">04 Mar 2025</td>
+                            <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="verifyOwner(this,'Nuwan Bandara')"><i class="fas fa-check"></i> Verify</button><button class="btn btn-danger btn-sm" onclick="rejectOwner(this,'Nuwan Bandara')"><i class="fas fa-xmark"></i></button></td></tr>
+                        <tr><td><strong>Champika Rathnayake</strong></td><td class="mono">077-432-8765</td><td style="font-size:12px">03 Mar 2025</td>
+                            <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="verifyOwner(this,'Champika')"><i class="fas fa-check"></i> Verify</button><button class="btn btn-danger btn-sm" onclick="rejectOwner(this,'Champika')"><i class="fas fa-xmark"></i></button></td></tr>
+                        <tr><td><strong>Tharaka Jayawardena</strong></td><td class="mono">076-123-0000</td><td style="font-size:12px">01 Mar 2025</td>
+                            <td class="flex gap-1"><button class="btn btn-success btn-sm" onclick="verifyOwner(this,'Tharaka')"><i class="fas fa-check"></i> Verify</button><button class="btn btn-danger btn-sm" onclick="rejectOwner(this,'Tharaka')"><i class="fas fa-xmark"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Commission -->
+            <div class="card">
+                <div class="card-header"><div class="card-title">Commission Tracker</div><span class="card-meta">20% of ALL PAYMENTS</span></div>
+                <div class="card-body">
+                    <div class="calc-display">
+                        <div class="calc-row"><span>Platform Gross Revenue</span><span class="calc-amount mono">LKR 231,000.00</span></div>
+                        <div class="calc-row"><span class="text-green">Owner Payouts (80%)</span><span class="calc-amount mono text-green">LKR 184,800.00</span></div>
+                        <div class="calc-row total"><span>Agent Commission (20%)</span><span class="calc-amount text-saffron">LKR 46,200.00</span></div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                            <span style="font-size:12px;color:var(--text2)">Monthly target progress</span>
+                            <span class="mono" style="font-size:12px;color:var(--saffron)">77%</span>
+                        </div>
+                        <div style="height:5px;background:var(--surface3);border-radius:3px;overflow:hidden">
+                            <div style="width:77%;height:100%;background:linear-gradient(90deg,var(--saffron),var(--amber));border-radius:3px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Users -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">Registered Users</div>
+                <div style="display:flex;gap:10px;align-items:center">
+                    <div class="search-wrap"><input type="text" id="userSearch" placeholder="Search users..."></div>
+                    <select class="form-control" style="width:auto;padding:8px 30px 8px 12px;font-size:12px">
+                        <option>All Roles</option><option>Driver</option><option>Owner</option><option>Agent</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table id="usersTable">
+                    <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <tr><td class="mono text-dim">001</td><td><strong>ashan_kumara</strong></td><td class="mono">071-234-5678</td><td><span class="badge badge-driver">Driver</span></td><td style="font-size:12px">Jan 15, 2025</td><td><span class="badge badge-confirmed">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                    <tr><td class="mono text-dim">002</td><td><strong>ruwan_wijesinghe</strong></td><td class="mono">077-888-9999</td><td><span class="badge badge-owner">Owner</span></td><td style="font-size:12px">Jan 8, 2025</td><td><span class="badge badge-confirmed">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                    <tr><td class="mono text-dim">003</td><td><strong>nimal_perera</strong></td><td class="mono">076-111-2222</td><td><span class="badge badge-driver">Driver</span></td><td style="font-size:12px">Feb 2, 2025</td><td><span class="badge badge-confirmed">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                    <tr><td class="mono text-dim">004</td><td><strong>samanthi_desilva</strong></td><td class="mono">070-333-4444</td><td><span class="badge badge-driver">Driver</span></td><td style="font-size:12px">Feb 14, 2025</td><td><span class="badge badge-inactive">Inactive</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                    <tr><td class="mono text-dim">005</td><td><strong>saman_admin</strong></td><td class="mono">075-000-1111</td><td><span class="badge badge-agent">Agent</span></td><td style="font-size:12px">Jan 1, 2025</td><td><span class="badge badge-confirmed">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="card">
+            <div class="card-header"><div class="card-title">Recent Platform Activity</div></div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item"><div class="timeline-time">Today · 10:42 AM</div><div class="timeline-text"><strong>#APT-0046</strong> submitted by <strong>nimal_perera</strong> for Slot A-204</div></div>
+                    <div class="timeline-item"><div class="timeline-time">Today · 09:15 AM</div><div class="timeline-text">Owner <strong>nuwan_bandara</strong> submitted verification request</div></div>
+                    <div class="timeline-item"><div class="timeline-time">Yesterday · 04:30 PM</div><div class="timeline-text"><strong>#APT-0045</strong> approved by <strong>ruwan_wijesinghe</strong></div></div>
+                    <div class="timeline-item"><div class="timeline-time">Yesterday · 02:10 PM</div><div class="timeline-text"><strong>#TXN-0089</strong> completed — LKR 200 · Commission: LKR 40</div></div>
+                    <div class="timeline-item"><div class="timeline-time">04 Mar · 11:00 AM</div><div class="timeline-text">New user <strong>pradeep_raj</strong> registered as Driver</div></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Verify Owner Modal -->
+<div class="modal-overlay" id="verifyOwnerModal">
+    <div class="modal">
+        <div class="modal-header"><div class="modal-title"><i class="fas fa-check-double" style="color:var(--green)"></i> Verify Park Owner</div><button class="modal-close" onclick="closeModal('verifyOwnerModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label class="form-label">Owner Username</label><input type="text" class="form-control" placeholder="Search owner..."></div>
+            <div class="form-group"><label class="form-label">Verification Notes</label><textarea class="form-control" rows="3" placeholder="Internal notes..."></textarea></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost btn-sm" onclick="closeModal('verifyOwnerModal')">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="closeModal('verifyOwnerModal');showToast('Owner verified!','success')"><i class="fas fa-check"></i> Verify</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{ initSearch('userSearch','usersTable'); });
+    function verifyOwner(btn, name) { btn.closest('tr').querySelector('td:last-child').innerHTML='<span class="badge badge-verified">Verified</span>'; showToast(name+' verified!','success'); }
+    function rejectOwner(btn, name) { btn.closest('tr').querySelector('td:last-child').innerHTML='<span class="badge badge-cancelled">Rejected</span>'; showToast(name+' rejected','error'); }
+</script>
+</body>
+</html>
